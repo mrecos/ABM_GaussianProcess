@@ -1,4 +1,5 @@
 # http://bobby.gramacy.com/teaching/rsm/lect6.html#1
+library(ggplot2)
 
 n <- 100
 X <- matrix(seq(0, 10, length=n), ncol=1)
@@ -10,7 +11,7 @@ library(mvtnorm, quietly=TRUE)
 Y <- rmvnorm(1, sigma=Sigma)
 plot(X, Y, type="l")
 
-Y <- rmvnorm(5, sigma=Sigma)
+Y <- rmvnorm(6, sigma=Sigma)
 matplot(X, t(Y), type="l", ylab="Y")
 
 n <- 8
@@ -72,16 +73,16 @@ mup <- SX %*% Si %*% y # k.xsx%*%solve(k.xx)%*%f$y
 Sigmap <- SXX - SX %*% Si %*% t(SX) # k.xsxs - k.xsx%*%solve(k.xx)%*%k.xxs
 sdp <- sqrt(diag(Sigmap))
 YY2 <- MASS::mvrnorm(1,mup,Sigmap)
-par(mfrow=c(1,2)); cols <- heat.colors(128)
-image(xx,xx, matrix(sdp, ncol=length(xx)), xlab="x1",ylab="x2", col=cols)
-points(X[,1], X[,2])
-image(xx,xx, matrix(YY2, ncol=length(xx)), xlab="x1",ylab="x2", col=cols)
-points(X[,1], X[,2])
-
-par(mar=c(1,0.5,0,0.5))
-persp(xx,xx, matrix(mup, ncol=40), theta=-30,phi=30,xlab="x1",ylab="x2",zlab="y")
-image(xx,xx, matrix(mup, ncol=length(xx)), xlab="x1",ylab="x2", col=cols)
-points(X[,1], X[,2])
+# par(mfrow=c(1,2)); cols <- heat.colors(128)
+# image(xx,xx, matrix(sdp, ncol=length(xx)), xlab="x1",ylab="x2", col=cols)
+# points(X[,1], X[,2])
+# image(xx,xx, matrix(YY2, ncol=length(xx)), xlab="x1",ylab="x2", col=cols)
+# points(X[,1], X[,2])
+# 
+# par(mar=c(1,0.5,0,0.5))
+# persp(xx,xx, matrix(mup, ncol=40), theta=-30,phi=30,xlab="x1",ylab="x2",zlab="y")
+# image(xx,xx, matrix(mup, ncol=length(xx)), xlab="x1",ylab="x2", col=cols)
+# points(X[,1], X[,2])
 
 pp <- data.frame(y=YY2,x1=XX[,1],x2=XX[,2])
 ggplot(data = pp,aes(x=x1,y=x2)) +
@@ -94,4 +95,6 @@ ggplot(data = pp,aes(x=x1,y=x2)) +
   scale_x_continuous(expand=c(0,0)) +
   scale_y_continuous(expand=c(0,0)) +
   scale_fill_viridis_c(option = "viridis")
+
+
 

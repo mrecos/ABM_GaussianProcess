@@ -13,3 +13,4 @@ resources/sass/.sass-cache/
 .Rproj.user
 ABM_GaussianProcess.Rproj
 ABD_GP.Rproj
+.Rhistory
