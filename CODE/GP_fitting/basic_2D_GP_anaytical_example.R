@@ -1,5 +1,7 @@
 # http://bobby.gramacy.com/teaching/rsm/lect6.html#1
-library(ggplot2)
+library("ggplot2")
+library("plgp") 
+library("viridis")
 
 n <- 100
 X <- matrix(seq(0, 10, length=n), ncol=1)
@@ -46,7 +48,7 @@ par(mfrow=c(1,2), mar=c(1,0.5,0.5,0.5))
 persp(x,x, matrix(Y[1,], ncol=nx), theta=-80,phi=10,xlab="x1",ylab="x2",zlab="y")
 persp(x,x, matrix(Y[2,], ncol=nx), theta=-30,phi=30,xlab="x1",ylab="x2",zlab="y")
 
-library(lhs) 
+library("lhs") 
 # sim X data
 X <- randomLHS(40, 2)
 X[,1] <- (X[,1] - 0.5)*6 + 1
