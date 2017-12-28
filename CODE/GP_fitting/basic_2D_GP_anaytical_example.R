@@ -60,18 +60,18 @@ xx <- seq(-2,4, length=40)
 XX <- expand.grid(xx, xx)
 
 # k.xx
-D <- distance(X)
-Sigma <- exp(-D)
+D <- distance(X) 
+Sigma <- exp(-D)                        # dim = X x X
 # k.xsxs
-DXX <- distance(XX)
-SXX <- exp(-DXX) + diag(eps, ncol(DXX))
+DXX <- distance(XX)  
+SXX <- exp(-DXX) + diag(eps, ncol(DXX)) # dim = XX x XX
 # k.xsx and t(k.xsx) = k.xxs
 DX <- distance(XX, X)
-SX <- exp(-DX)
+SX <- exp(-DX)                          # dim = XX x X
 # k.xx^-1
-Si <- solve(Sigma)
+Si <- solve(Sigma)                      # dim = xx x xx
 # fit
-mup <- SX %*% Si %*% y # k.xsx%*%solve(k.xx)%*%f$y
+mup <- SX %*% Si %*% y # k.xsx%*%solve(k.xx)%*%f$y # (N* x N) %*% (N x N) %*% N
 Sigmap <- SXX - SX %*% Si %*% t(SX) # k.xsxs - k.xsx%*%solve(k.xx)%*%k.xxs
 sdp <- sqrt(diag(Sigmap))
 YY2 <- MASS::mvrnorm(1,mup,Sigmap)

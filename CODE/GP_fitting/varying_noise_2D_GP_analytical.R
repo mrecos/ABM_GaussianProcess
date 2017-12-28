@@ -8,7 +8,7 @@
 ### of a gaussian process in which y = sin(x). It will reproduce figure 15.2 in      ###
 ### Murphy 2012 and 2.2 in Rasmussen and Williams 2006.                              ###
 ########################################################################################
-# https://github.com/m-clark/Miscellaneous-R-Code/blob/master/ModelFitting/gp%20Examples/gaussianprocessNoiseFree.R
+
 
 #################
 ### Functions ###
@@ -29,17 +29,24 @@ Kfn = function(x, l=1, sigmaf=1){
   sigmaf * exp( -(1/(2*l^2)) * as.matrix(dist(x, upper=T, diag=T)^2) )
 }
 
-
+rbf_D <- function(X, Y = NULL, sigmaf = 1, l=1, eps = sqrt(.Machine$double.eps), diag = TRUE){
+  if(is.null(Y)){
+    D <- plgp::distance(X)
+  } else {
+    D <- plgp::distance(X, Y)
+  }
+  sigmaf * exp( -(1/(2*l^2)) * as.matrix(D^2) )
+}
 
 #####################
 ### Preliminaries ###
 #####################
 
-l = 0.05           # for l, sigmaf, see note at covariance function
-sigmaf = 10      
+l = 0.1          # for l, sigmaf, see note at covariance function
+sigmaf = 5      
 keps = 1e-8     # see note at Kstarstar
 nprior = 5      # number of prior draws
-npostpred = 2   # number of posterior predictive draws
+npostpred = 2  # number of posterior predictive draws
 
 ##################
 ### Prior plot ###
@@ -66,57 +73,68 @@ g1 = ggplot(aes(x=x, y=value), data=gdat) +
 #########################################
 ### generate noise-less training data ###
 #########################################
-Xtrain = seq(-5, 5, 0.2) # N
-ytrain <- rnorm(length(Xtrain),0,0.1)
-ytrain[which(Xtrain == -2.4)] <- 10
-nTrain = length(Xtrain)
 
-Xtest = seq(-5, 5, 0.1) # N*
-nTest = length(Xtest)
+########### WORK IN PROGRESS TO GET 2D HERE````````````
+
+# Xtrain = c(-4, -3, -2, -1, 1)
+# ytrain = sin(Xtrain)
+Xtrain_seq = seq(-5, 5, 0.2)
+Xtrain = as.matrix(expand.grid(Xtrain_seq, Xtrain_seq))  # N
+ytrain <- rnorm(nrow(Xtrain),0,0.1)
+ytrain[which(Xtrain[,1] == 0 & Xtrain[,2] == 0)] <- 2.5
+nTrain = nrow(Xtrain)
+
+Xtest_seq = seq(-5, 5, 1)
+Xtest <- as.matrix(expand.grid(Xtest_seq, Xtest_seq))    # N*
+nTest = nrow(Xtest)
 
 # The standard deviation of the noise AS VECTOR! length(Xtrain)
-sigma.n <- rep(0.2, length(Xtrain))
+sigma_n <- rep(0.2, nrow(Xtrain))
 
 #####################################
 ### generate posterior predictive ###
 #####################################
 
+########### WORK IN PROGRESS TO GET 2D HERE````````````
+
 # Create K, K*, and K** matrices as defined in the texts
-K = Kfn(Xtrain, l=l, sigmaf=sigmaf)  # dim = N x N
-K_ = Kfn(c(Xtrain, Xtest), l=l, sigmaf=sigmaf)                                 # initial matrix dim = (N+N*) x (N+N*)
+K = Kfn(Xtrain, l=l, sigmaf=sigmaf)                                            # Dim N x N
+K_ = Kfn(rbind(Xtrain, Xtest), l=l, sigmaf=sigmaf)                                 # initial matrix
+# K_ <- rbf_D(Xtrain, Xtest, l=l, sigmaf = sigmaf)
 Kstar = K_[1:nTrain, (nTrain+1):ncol(K_)]                                      # dim = N x N*
 tKstar = t(Kstar)                                                              # dim = N* x N
 Kstarstar = K_[(nTrain+1):nrow(K_), (nTrain+1):ncol(K_)] + keps*diag(nTest)    # dim = N* x N*; the keps part is for positive definiteness
-Kinv = solve(K + sigma.n^2 * diag(1, ncol(K)))
+Kinv = solve(K + sigma_n^2 * diag(1, ncol(K)))
 
 # calculate posterior mean and covariance
-postMu = muFn(Xtest) + t(Kstar) %*% Kinv %*% (ytrain-muFn(Xtrain))
+postMu = muFn(Xtest[,1]) + tKstar %*% Kinv %*% (ytrain-muFn(Xtrain[,1])) # (N x N*) %*% (N x N) %*% N
 postCov = Kstarstar - t(Kstar) %*% Kinv %*% Kstar
 s2 = diag(postCov)
 # R = chol(postCov)  
 # L = t(R)      # L is used in alternative formulation below based on gaussSample.m
 
-
-
 # generate draws from posterior predictive
 y2 = data.frame(t(mvrnorm(npostpred, mu=postMu, Sigma=postCov)))
 # y2 = data.frame(replicate(npostpred, postMu + L %*% rnorm(postMu))) # alternative
+
 
 #################################
 ### Posterior predictive plot ###
 #################################
 
 # reshape data for plotting
-gdat = melt(data.frame(x=Xtest, y=y2, selower=postMu-2*sqrt(s2), seupper=postMu+2*sqrt(s2)),
-            id=c('x', 'selower', 'seupper'))
+gdat = melt(data.frame(x1=Xtest[,1], x2=Xtest[,2], y=y2[,1], selower=postMu-2*sqrt(s2), seupper=postMu+2*sqrt(s2)),
+            id=c('x1', 'x2', 'selower', 'seupper'))
 
-g2 = ggplot(aes(x=x, y=value), data=gdat) + 
-  geom_ribbon(aes(ymin=selower, ymax=seupper,group=variable), fill='gray90') +
-  geom_line(aes(group=variable), color='#FF5500') +
-  geom_point(aes(x=Xtrain, y=ytrain), data=data.frame(Xtrain, ytrain)) +
-  labs(title='Posterior Predictive') +
-  theme_bw()
-
+g2 <- ggplot(data = gdat, aes(x=x1,y=x2)) +
+  geom_raster(aes(fill=value), interpolate = TRUE) +
+  geom_contour(aes(z=value), bins = 12, color = "gray30", 
+               size = 0.5, alpha = 0.5) +
+  geom_point(aes(size = value)) +
+  coord_equal() +
+  scale_x_continuous(expand=c(0,0)) +
+  scale_y_continuous(expand=c(0,0)) +
+  scale_fill_viridis_c(option = "viridis")
 # g2
 
 ####################################################
