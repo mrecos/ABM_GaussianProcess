@@ -9,6 +9,7 @@
 ### Murphy 2012 and 2.2 in Rasmussen and Williams 2006.                              ###
 ########################################################################################
 
+########## MDH - THIS IS (SO FAR) THE BEST WORKING 2D CODE I HAVE ##########################
 
 #################
 ### Functions ###
@@ -89,7 +90,8 @@ Xtest <- as.matrix(expand.grid(Xtest_seq, Xtest_seq))    # N*
 nTest = nrow(Xtest)
 
 # The standard deviation of the noise AS VECTOR! length(Xtrain)
-sigma_n <- rep(0.2, nrow(Xtrain))
+# sigma_n <- rep(0.2, nrow(Xtrain))
+sigma_n <- sample(seq(0.1,0.9,0.05), nrow(Xtrain), replace = TRUE)
 
 #####################################
 ### generate posterior predictive ###
@@ -143,3 +145,13 @@ g2 <- ggplot(data = gdat, aes(x=x1,y=x2)) +
 
 library(gridExtra)
 grid.arrange(g1, g2, ncol=2)
+
+############# NOT 100% sure which of test and train goes where to make this useful just yet #######
+library("rgl")
+open3d()
+bg3d("white")
+material3d(col = "black")
+z <- matrix(y2[,1], nrow = length(Xtest_seq))
+persp3d(Xtest_seq, Xtest_seq, z, aspect = c(1, 1, 0.5), col="lightgray", smooth=TRUE)
+spheres3d(x = Xtest[,1], y = Xtest[,2], z = y2[,1], radius = 0.1, color = "red")
+

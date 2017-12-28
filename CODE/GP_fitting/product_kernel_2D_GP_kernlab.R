@@ -3,6 +3,9 @@
 ## kernel has sigma in it now, but not same form as exp(-s*(abs(X1[i]-X2[j])/l)^2); ^2 is different
 ### works, but sigma acts in the opposite as I thought it should; smaller = less wiggle. look into
 
+########### THIS IS NOT REALLY WORKING CORRECTLY, STILL WORK IN PROGRESS ##################
+
+
 library("ggplot2") # plotting
 # library("plgp")    # for distance() function
 library("lhs")     # for siulating new data
