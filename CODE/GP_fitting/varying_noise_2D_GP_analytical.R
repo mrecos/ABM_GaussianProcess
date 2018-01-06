@@ -112,12 +112,12 @@ Kinv = solve(K + sigma_n^2 * diag(1, ncol(K)))
 postMu = muFn(Xtest[,1]) + tKstar %*% Kinv %*% (ytrain-muFn(Xtrain[,1])) # (N x N*) %*% (N x N) %*% N
 postCov = Kstarstar - t(Kstar) %*% Kinv %*% Kstar
 s2 = diag(postCov)
-# R = chol(postCov)  
+# R = chol(postCov)
 # L = t(R)      # L is used in alternative formulation below based on gaussSample.m
 
 # generate draws from posterior predictive
 y2 = data.frame(t(mvrnorm(npostpred, mu=postMu, Sigma=postCov)))
-# y2 = data.frame(replicate(npostpred, postMu + L %*% rnorm(postMu))) # alternative
+# y2_c1 = data.frame(replicate(npostpred, postMu + L %*% rnorm(postMu))) # alternative
 
 
 #################################
