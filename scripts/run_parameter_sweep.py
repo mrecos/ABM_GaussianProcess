@@ -26,15 +26,29 @@ def _float_tag(value: float) -> str:
 
 
 def _build_sweep(max_runs: int) -> list[dict[str, object]]:
-    betas = [0.5, 1.0, 2.0]
-    noise = [0.05, 0.15]
-    memory_k = [25, 75]
-    landscape = ["smooth", "patchy"]
-    neighborhood = ["von_neumann", "moore"]
+    betas = [1.0]
+    noise = [0.1]
+    memory_k = [50]
+    landscape = ["patchy"]
+    neighborhood = ["moore"]
+    move_cost_weights = [0.0, 0.2, 0.4, 0.6, 0.8]
+    risk_weights = [0.0, 0.1]
 
-    combos = list(product(betas, noise, memory_k, landscape, neighborhood))
+    combos = list(
+        product(
+            betas,
+            noise,
+            memory_k,
+            landscape,
+            neighborhood,
+            move_cost_weights,
+            risk_weights,
+        )
+    )
     runs: list[dict[str, object]] = []
-    for idx, (beta, obs_noise, mem_k, land, neigh) in enumerate(combos):
+    for idx, (beta, obs_noise, mem_k, land, neigh, move_w, risk_w) in enumerate(
+        combos
+    ):
         if len(runs) >= max_runs:
             break
         runs.append(
@@ -46,6 +60,8 @@ def _build_sweep(max_runs: int) -> list[dict[str, object]]:
                 "memory_k": mem_k,
                 "landscape_type": land,
                 "neighborhood": neigh,
+                "move_cost_weight": move_w,
+                "risk_weight": risk_w,
             }
         )
     return runs
@@ -66,6 +82,8 @@ def main() -> None:
             memory_k=int(run["memory_k"]),
             landscape_type=str(run["landscape_type"]),
             neighborhood=str(run["neighborhood"]),
+            move_cost_weight=float(run["move_cost_weight"]),
+            risk_weight=float(run["risk_weight"]),
             steps=5000,
             grid_size=50,
             seed=42 + int(run["idx"]),
@@ -77,6 +95,8 @@ def main() -> None:
             f"_k-{config.memory_k}"
             f"_l-{config.landscape_type[0]}"
             f"_nb-{config.neighborhood[0]}"
+            f"_mc-{_float_tag(config.move_cost_weight)}"
+            f"_rk-{_float_tag(config.risk_weight)}"
         )
         outdir = base_out / tag
         outdir.mkdir(parents=True, exist_ok=True)
