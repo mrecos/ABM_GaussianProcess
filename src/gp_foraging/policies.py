@@ -13,7 +13,11 @@ def select_next_pos(
     """Select the next position based on the configured policy."""
     if config.policy == "random":
         return _random_walk(agent, landscape, config)
-    raise ValueError(f"Unsupported policy '{config.policy}' in Phase 2")
+    if config.policy == "greedy_true":
+        return _greedy_true(agent, landscape, config)
+    if config.policy == "greedy_noisy":
+        return _greedy_noisy(agent, landscape, config)
+    raise ValueError(f"Unsupported policy '{config.policy}'")
 
 
 def _random_walk(
@@ -24,3 +28,60 @@ def _random_walk(
         return agent.pos
     idx = agent.rng.integers(0, len(neighbors))
     return neighbors[int(idx)]
+
+
+def _greedy_true(
+    agent: ForagerAgent, landscape: Landscape, config: SimulationConfig
+) -> tuple[int, int]:
+    neighbors = landscape.neighbors(*agent.pos, config.neighborhood)
+    if not neighbors:
+        return agent.pos
+    best = neighbors[0]
+    best_score = _true_score(best, landscape, config)
+    for cell in neighbors[1:]:
+        score = _true_score(cell, landscape, config)
+        if score > best_score:
+            best = cell
+            best_score = score
+    return best
+
+
+def _greedy_noisy(
+    agent: ForagerAgent, landscape: Landscape, config: SimulationConfig
+) -> tuple[int, int]:
+    neighbors = landscape.neighbors(*agent.pos, config.neighborhood)
+    if not neighbors:
+        return agent.pos
+    best = neighbors[0]
+    best_score = _noisy_score(agent, best, landscape, config)
+    for cell in neighbors[1:]:
+        score = _noisy_score(agent, cell, landscape, config)
+        if score > best_score:
+            best = cell
+            best_score = score
+    return best
+
+
+def _true_score(
+    cell: tuple[int, int], landscape: Landscape, config: SimulationConfig
+) -> float:
+    truth = landscape.sample_truth(*cell)
+    return float(
+        truth
+        - config.move_cost_weight * float(landscape.cost[cell])
+        - config.risk_weight * float(landscape.risk[cell])
+    )
+
+
+def _noisy_score(
+    agent: ForagerAgent,
+    cell: tuple[int, int],
+    landscape: Landscape,
+    config: SimulationConfig,
+) -> float:
+    observed = agent.last_seen.get(cell, 0.5)
+    return float(
+        observed
+        - config.move_cost_weight * float(landscape.cost[cell])
+        - config.risk_weight * float(landscape.risk[cell])
+    )

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -63,3 +63,13 @@ def run_simulation(config: SimulationConfig) -> SimulationResult:
         config=config,
         seed=config.seed,
     )
+
+
+def run_batch(config: SimulationConfig) -> list[SimulationResult]:
+    """Run multiple simulations with incremented seeds."""
+    config.validate()
+    results: list[SimulationResult] = []
+    for idx in range(config.runs):
+        run_config = replace(config, seed=config.seed + idx)
+        results.append(run_simulation(run_config))
+    return results

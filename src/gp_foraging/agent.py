@@ -18,6 +18,7 @@ class ForagerAgent:
     memory_k: int
     obs_X: list[tuple[int, int]] = field(default_factory=list)
     obs_y: list[float] = field(default_factory=list)
+    last_seen: dict[tuple[int, int], float] = field(default_factory=dict)
 
     def observe(self, landscape: Landscape, obs_noise_std: float) -> float:
         """Observe the current cell with Gaussian noise and store memory."""
@@ -28,6 +29,7 @@ class ForagerAgent:
             y = float(self.rng.normal(truth, obs_noise_std))
         self.obs_X.append(self.pos)
         self.obs_y.append(y)
+        self.last_seen[self.pos] = y
         if len(self.obs_y) > self.memory_k:
             self.obs_X = self.obs_X[-self.memory_k :]
             self.obs_y = self.obs_y[-self.memory_k :]
