@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import numpy as np
+
 from gp_foraging.agent import ForagerAgent
 from gp_foraging.config import SimulationConfig
 from gp_foraging.landscape import Landscape
@@ -17,6 +19,8 @@ def select_next_pos(
         return _greedy_true(agent, landscape, config)
     if config.policy == "greedy_noisy":
         return _greedy_noisy(agent, landscape, config)
+    if config.policy == "gp_ucb":
+        return _gp_ucb(agent, landscape, config)
     raise ValueError(f"Unsupported policy '{config.policy}'")
 
 
@@ -85,3 +89,24 @@ def _noisy_score(
         - config.move_cost_weight * float(landscape.cost[cell])
         - config.risk_weight * float(landscape.risk[cell])
     )
+
+
+def _gp_ucb(
+    agent: ForagerAgent, landscape: Landscape, config: SimulationConfig
+) -> tuple[int, int]:
+    neighbors = landscape.neighbors(*agent.pos, config.neighborhood)
+    if not neighbors:
+        return agent.pos
+    if len(agent.obs_y) < 3 or agent.gp is None:
+        return _random_walk(agent, landscape, config)
+    mu, sigma = agent.predict_cells(neighbors)
+    scores = (
+        mu
+        - config.move_cost_weight * np.array([landscape.cost[cell] for cell in neighbors])
+        - config.risk_weight * np.array([landscape.risk[cell] for cell in neighbors])
+        + config.beta * sigma
+    )
+    max_score = float(np.max(scores))
+    candidates = [idx for idx, score in enumerate(scores) if float(score) == max_score]
+    choice = int(agent.rng.choice(candidates))
+    return neighbors[choice]

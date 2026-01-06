@@ -18,6 +18,7 @@ class SimulationResult:
     observations: list[float]
     true_values: list[float]
     rewards: list[float]
+    uncertainty: list[float]
     config: SimulationConfig
     seed: int
 
@@ -26,7 +27,12 @@ def _init_agent(landscape: Landscape, config: SimulationConfig) -> ForagerAgent:
     rng = np.random.default_rng(config.seed)
     start_i = int(rng.integers(0, landscape.N))
     start_j = int(rng.integers(0, landscape.N))
-    return ForagerAgent(pos=(start_i, start_j), rng=rng, memory_k=config.memory_k)
+    return ForagerAgent(
+        pos=(start_i, start_j),
+        rng=rng,
+        memory_k=config.memory_k,
+        grid_size=landscape.N,
+    )
 
 
 def run_simulation(config: SimulationConfig) -> SimulationResult:
@@ -38,9 +44,12 @@ def run_simulation(config: SimulationConfig) -> SimulationResult:
     observations: list[float] = []
     true_values: list[float] = []
     rewards: list[float] = []
+    uncertainty: list[float] = []
 
     for _ in range(config.steps):
         obs = agent.observe(landscape, config.obs_noise_std)
+        if config.policy == "gp_ucb":
+            agent.fit_gp(config.obs_noise_std)
         true_val = landscape.sample_truth(*agent.pos)
         reward = (
             true_val
@@ -52,6 +61,11 @@ def run_simulation(config: SimulationConfig) -> SimulationResult:
         rewards.append(float(reward))
 
         next_pos = select_next_pos(agent, landscape, config)
+        if agent.gp is None:
+            uncertainty.append(float("nan"))
+        else:
+            _, sigma = agent.predict_cells([next_pos])
+            uncertainty.append(float(sigma[0]) if sigma.size else float("nan"))
         agent.pos = next_pos
         trajectory.append(agent.pos)
 
@@ -60,6 +74,7 @@ def run_simulation(config: SimulationConfig) -> SimulationResult:
         observations=observations,
         true_values=true_values,
         rewards=rewards,
+        uncertainty=uncertainty,
         config=config,
         seed=config.seed,
     )
