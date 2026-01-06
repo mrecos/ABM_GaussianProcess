@@ -26,3 +26,18 @@ Product spec and build plan live in `AI_Context/`. Implementation is in progress
 - Create a virtual environment (recommended).
 - Install dependencies: `pip install -r requirements.txt`
 - Run tests: `pytest`
+
+## Key Parameters (Intuition + Expected Effects)
+These are the most important knobs for exploring GP-driven foraging behavior.
+
+- `--beta` (exploration weight): Higher values emphasize uncertainty (exploration); lower values exploit known high-mean regions. Expect larger loops and broader visitation at higher beta.
+- `--memory-k`: Size of the GP training window. Larger values smooth estimates but can slow adaptation; smaller values react faster to new observations but can be noisier.
+- `--obs-noise-std`: Observation noise level. Higher noise makes the agent less confident, leading to more exploration and slower convergence.
+- `--landscape-type`: `smooth` vs `patchy`. Smooth fields produce gradual gradients and smoother paths; patchy fields encourage jumps between peaks.
+- `--neighborhood`: `von_neumann` (4-neighbor) vs `moore` (8-neighbor). Moore allows diagonal moves and faster spatial coverage.
+- `--steps`: Longer runs reveal asymptotic behavior (coverage, uncertainty collapse). Shorter runs emphasize early exploration dynamics.
+- `--grid-size`: Larger grids increase exploration demands and make uncertainty reduction slower.
+
+Example intuition checks:
+- Increase `--beta` from 1.0 to 2.0 to see wider coverage and slower uncertainty collapse.
+- Reduce `--memory-k` (e.g., 75 → 25) to make the agent respond more strongly to recent observations.
