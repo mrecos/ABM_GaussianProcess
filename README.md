@@ -37,6 +37,8 @@ These are the most important knobs for exploring GP-driven foraging behavior.
 - `--neighborhood`: `von_neumann` (4-neighbor) vs `moore` (8-neighbor). Moore allows diagonal moves and faster spatial coverage.
 - `--steps`: Longer runs reveal asymptotic behavior (coverage, uncertainty collapse). Shorter runs emphasize early exploration dynamics.
 - `--grid-size`: Larger grids increase exploration demands and make uncertainty reduction slower.
+- `--move-cost-weight`: Penalizes movement into costly cells (if a cost surface is used). Higher values bias toward shorter, safer paths.
+- `--risk-weight`: Penalizes risky cells (if a risk surface is used). Higher values encourage risk-averse trajectories.
 
 Example intuition checks:
 - Increase `--beta` from 1.0 to 2.0 to see wider coverage and slower uncertainty collapse.

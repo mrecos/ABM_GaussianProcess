@@ -35,6 +35,10 @@ def simulate(
     runs: Annotated[int, typer.Option(help="Number of runs")] = 1,
     seed: Annotated[int, typer.Option(help="Random seed")] = 42,
     outdir: Annotated[Path, typer.Option(help="Output directory")] = Path("outputs"),
+    move_cost_weight: Annotated[
+        float, typer.Option(help="Movement cost weight")
+    ] = 0.0,
+    risk_weight: Annotated[float, typer.Option(help="Risk weight")] = 0.0,
 ) -> None:
     """Run a single simulation and save plots + metrics."""
     config = SimulationConfig(
@@ -44,6 +48,8 @@ def simulate(
         beta=beta,
         runs=runs,
         seed=seed,
+        move_cost_weight=move_cost_weight,
+        risk_weight=risk_weight,
     )
     if runs > 1:
         results = run_batch(config)
@@ -80,6 +86,10 @@ def compare(
     runs: Annotated[int, typer.Option(help="Runs per policy")] = 10,
     seed: Annotated[int, typer.Option(help="Random seed")] = 42,
     outdir: Annotated[Path, typer.Option(help="Output directory")] = Path("outputs"),
+    move_cost_weight: Annotated[
+        float, typer.Option(help="Movement cost weight")
+    ] = 0.0,
+    risk_weight: Annotated[float, typer.Option(help="Risk weight")] = 0.0,
 ) -> None:
     """Run multiple policies and save comparison plots + metrics."""
     policy_list = [p.strip() for p in policies.split(",") if p.strip()]
@@ -92,6 +102,8 @@ def compare(
             beta=beta,
             runs=runs,
             seed=seed,
+            move_cost_weight=move_cost_weight,
+            risk_weight=risk_weight,
         )
         all_results.extend(run_batch(config))
 
