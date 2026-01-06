@@ -1,3 +1,5 @@
+![ABM GP Abstract](img/ABM_GP_Abstract.png)
+
 # ABM Gaussian Process Foraging (MVP)
 
 This repository is being rebuilt as a Python package that simulates Bayesian optimal foraging on a 2D grid. The core idea is to compare a GP-driven agent (exploration vs. exploitation via UCB) against simple baselines on unknown resource landscapes. The MVP focuses on a single agent, reproducible runs, and clear visual/metric outputs.
