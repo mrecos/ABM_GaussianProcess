@@ -21,3 +21,8 @@ The Python implementation will live under `src/gp_foraging/` with modules for co
 
 ## Status
 Product spec and build plan live in `AI_Context/`. Implementation is in progress as we transition to the new Python package.
+
+## Development Setup
+- Create a virtual environment (recommended).
+- Install dependencies: `pip install -r requirements.txt`
+- Run tests: `pytest`
