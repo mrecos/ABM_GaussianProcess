@@ -10,6 +10,9 @@ This repository is being rebuilt as a Python package that simulates Bayesian opt
 - Compare against baseline behaviors (random walk, greedy on noisy samples, optional greedy on true values).
 - Produce plots and metrics that reveal learning, exploration, and trajectory structure.
 
+## Theoretical Foundations
+The position paper in `theoretical_foundations_roadmap_gp_cognition_oft_archaeological_abm.md` frames the project as a bridge between OFT, spatial cognition, and archaeological ABM. It argues for modeling knowledge as a GP posterior over space, using uncertainty-driven exploration to explain home-range formation, disequilibrium under change or depletion, and discovery/visibility bias in the archaeological record. It also outlines a phased research roadmap and falsifiable predictions for each claim.
+
 ## Scope (MVP)
 - 2D square grid, 4- or 8-neighborhood movement.
 - Two landscape generators: smooth (Gaussian-filtered noise) and patchy (Gaussian peaks).
