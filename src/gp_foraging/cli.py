@@ -1,9 +1,8 @@
 """CLI entrypoints for running simulations."""
 
-from __future__ import annotations
-
 import json
 from pathlib import Path
+from typing import Annotated
 
 import typer
 
@@ -29,13 +28,13 @@ def _write_json(path: Path, payload: dict) -> None:
 
 @app.command()
 def simulate(
-    policy: str = typer.Option("gp_ucb"),
-    steps: int = typer.Option(500),
-    grid_size: int = typer.Option(50),
-    beta: float = typer.Option(1.0),
-    runs: int = typer.Option(1),
-    seed: int = typer.Option(42),
-    outdir: Path = typer.Option(Path("outputs")),
+    policy: Annotated[str, typer.Option(help="Policy name")] = "gp_ucb",
+    steps: Annotated[int, typer.Option(help="Number of steps")] = 500,
+    grid_size: Annotated[int, typer.Option(help="Grid size (N)")] = 50,
+    beta: Annotated[float, typer.Option(help="Exploration weight for GP-UCB")] = 1.0,
+    runs: Annotated[int, typer.Option(help="Number of runs")] = 1,
+    seed: Annotated[int, typer.Option(help="Random seed")] = 42,
+    outdir: Annotated[Path, typer.Option(help="Output directory")] = Path("outputs"),
 ) -> None:
     """Run a single simulation and save plots + metrics."""
     config = SimulationConfig(
@@ -72,13 +71,15 @@ def simulate(
 
 @app.command()
 def compare(
-    policies: str = typer.Option("random,greedy_noisy,gp_ucb"),
-    steps: int = typer.Option(500),
-    grid_size: int = typer.Option(50),
-    beta: float = typer.Option(1.0),
-    runs: int = typer.Option(10),
-    seed: int = typer.Option(42),
-    outdir: Path = typer.Option(Path("outputs")),
+    policies: Annotated[
+        str, typer.Option(help="Comma-separated policy names")
+    ] = "random,greedy_noisy,gp_ucb",
+    steps: Annotated[int, typer.Option(help="Number of steps")] = 500,
+    grid_size: Annotated[int, typer.Option(help="Grid size (N)")] = 50,
+    beta: Annotated[float, typer.Option(help="Exploration weight for GP-UCB")] = 1.0,
+    runs: Annotated[int, typer.Option(help="Runs per policy")] = 10,
+    seed: Annotated[int, typer.Option(help="Random seed")] = 42,
+    outdir: Annotated[Path, typer.Option(help="Output directory")] = Path("outputs"),
 ) -> None:
     """Run multiple policies and save comparison plots + metrics."""
     policy_list = [p.strip() for p in policies.split(",") if p.strip()]
