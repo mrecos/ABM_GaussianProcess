@@ -4,9 +4,9 @@
 This repository is being rebuilt as a Python package for Gaussian Process (GP) driven foraging simulations.
 - `src/gp_foraging/`: Python package modules (config, landscape, agent, policies, simulator, metrics, plotting, CLI).
 - `tests/`: Python tests (to be added alongside features).
-- `AI_Context/`: product specs and implementation plan.
+- `Doc/`: product specs and implementation plan.
 - `img/`: project diagrams used in the README.
-- `legancy_R/`: legacy R experiments kept for reference.
+- `R_legacy_code/`: legacy R experiments kept for reference.
 - `README.md`: project intent and current scope.
 
 ## Build, Test, and Development Commands

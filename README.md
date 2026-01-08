@@ -23,10 +23,10 @@ The math note in [mathematical_statistical_underpinnings_gp_cognition_oft_abm.md
 - Outputs: trajectory plot, visitation heatmap, learning curve, and policy comparisons.
 
 ## Planned Package Layout
-The Python implementation will live under `src/gp_foraging/` with modules for configuration, landscape generation, agent/policies, simulation, metrics, plotting, and a CLI. Legacy R experiments live in `legancy_R/`.
+The Python implementation will live under `src/gp_foraging/` with modules for configuration, landscape generation, agent/policies, simulation, metrics, plotting, and a CLI. Legacy R experiments live in `R_legacy_code/`.
 
 ## Status
-Product spec and build plan live in `AI_Context/`. Implementation is in progress as we transition to the new Python package.
+Product spec and build plan live in `Doc/`. Implementation is in progress as we transition to the new Python package.
 
 ## Development Setup
 - Create a virtual environment (recommended).
