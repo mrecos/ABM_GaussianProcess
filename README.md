@@ -14,7 +14,7 @@ This repository is being rebuilt as a Python package that simulates Bayesian opt
 The position paper in [theoretical_foundations_roadmap_gp_cognition_oft_archaeological_abm.md](theoretical_foundations_roadmap_gp_cognition_oft_archaeological_abm.md) frames the project as a bridge between OFT, spatial cognition, and archaeological ABM. It argues for modeling knowledge as a GP posterior over space, using uncertainty-driven exploration to explain home-range formation, disequilibrium under change or depletion, and discovery/visibility bias in the archaeological record. It also outlines a phased research roadmap and falsifiable predictions for each claim.
 
 ## Mathematical & Statistical Underpinnings
-The math note in [mathematical_statistical_underpinnings_gp_cognition_oft_abm.md](mathematical_statistical_underpinnings_gp_cognition_oft_abm.md) formalizes the GP belief model, observation noise, and UCB-style decision rule. It provides explicit notation for the landscape, GP posterior mean/variance, bounded memory, and the exploitation–exploration objective, plus extensions for depletion/regeneration and observation constraints.
+The math note in [Mathematical & Statistical Underpinnings — Gp-cognition Oft Abm.pdf](Mathematical%20%26%20Statistical%20Underpinnings%20%E2%80%94%20Gp-cognition%20Oft%20Abm.pdf) formalizes the GP belief model, observation noise, and UCB-style decision rule. It provides explicit notation for the landscape, GP posterior mean/variance, bounded memory, and the exploitation–exploration objective, plus extensions for depletion/regeneration and observation constraints.
 
 ## Scope (MVP)
 - 2D square grid, 4- or 8-neighborhood movement.
